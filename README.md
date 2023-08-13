@@ -1,4 +1,15 @@
 # champions-league
+Challenge for Frontend Developer (VueJs, React) position.
+Developer: Poliana Barros
+
+## Description
+- The project is Vue2 as requires,
+- EsLint is installed and settled up,
+- All nice to have were done.
+
+More challenging part: scroll horizontally the table for mobile devices.
+
+
 
 ## Project setup
 ```
