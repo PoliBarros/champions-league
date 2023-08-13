@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" ref="scrollElement">
     <!-- NICE TO HAVE - Skeleton Loader -->
     <SkeletonLoader v-if="isLoading" />
 
@@ -10,20 +10,25 @@
       </div>
 
       <!-- Main content -->
-      <div v-else class="club-header">
+      <div
+        v-else
+        :class="{ 'header-scrolled ': changeHeader }"
+        class="club-header"
+      >
         <h2>English Premier League</h2>
         <button class="loadMore" v-if="showBtn" v-on:click="loadMore">
           Load More
         </button>
       </div>
 
-      {{ displayList }}
+      <ClubList :clubs="displayList" />
     </div>
   </div>
 </template>
 
 <script>
 import SkeletonLoader from "./components/SkeletonLoader.vue";
+import ClubList from "./components/ClubList.vue";
 import mockClubInfo from "./utils/mock";
 import "./assets/global.css";
 
@@ -31,9 +36,11 @@ export default {
   name: "App",
   components: {
     SkeletonLoader,
+    ClubList,
   },
   data() {
     return {
+      changeHeader: false,
       list: [],
       displayList: [],
       isLoading: true,
@@ -42,6 +49,9 @@ export default {
     };
   },
   mounted() {
+    // effect on scrool to keep visible the button load
+    this.$refs.scrollElement.addEventListener("scroll", this.handleScroll);
+
     //This setTimeout is used just to simulate a delay to show the skeleton loading - Real code should not have this
     setTimeout(() => {
       fetch(
@@ -72,18 +82,33 @@ export default {
         });
     }, 1000);
   },
+  beforeDestroy() {
+    this.$refs.scrollElement.removeEventListener("scroll", this.handleScroll);
+  },
   methods: {
     loadMore() {
+      this.isLoading = true;
       //NICE TO HAVE - Load 3 more items when button clicked
       if (this.list.length === 0) {
         this.showBtn = false;
         return;
       }
+      //remove the first 3 element and put on the list to show to the user
       const elementsToAdd = this.list.splice(0, 3);
       this.displayList = this.displayList.concat(elementsToAdd);
 
       //If the list is empty, hide the button
       this.showBtn = this.list.length === 0 ? false : true;
+      this.isLoading = false;
+    },
+    handleScroll() {
+      const currentScrollPosition = this.$refs.scrollElement.scrollTop;
+
+      if (currentScrollPosition > 0) {
+        this.changeHeader = true;
+      } else {
+        this.changeHeader = false;
+      }
     },
   },
 };
@@ -93,13 +118,13 @@ export default {
 #app {
   text-align: center;
   color: var(--font-color);
-  background-color: var(--bg-color);
+  background-color: var(--secondary);
   width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
+  overflow-y: auto;
 }
 .club-content {
   height: 100%;
@@ -109,16 +134,23 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px 0;
   border: 5px solid transparent;
-  margin-top: 50px;
+  position: sticky;
+  top: 0;
+  background: var(--secondary);
+  z-index: 3;
+}
+.header-scrolled {
+  border-bottom: 5px solid var(--gray);
 }
 .loadMore {
   padding: 10px;
   cursor: pointer;
-  color: var(--font-color);
-  background-color: #fff;
+  color: var(--primary);
+  background-color: var(--secondary);
   font-weight: bold;
-  border: 2px solid var(--font-color);
+  border: 2px solid var(--primary);
   transition: all 0.3s ease-in;
   box-shadow: var(--shadow);
   text-transform: uppercase;

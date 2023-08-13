@@ -1,8 +1,16 @@
 :root{
     --shadow: 0px 0px 4px 0px #ccc;;
-    --font-color:#2c3e50;
-    --bg-color:#fff;
-    /* Colors */
+  
+  /* Colors */
+  --primary:#2c3e50;
+  --secondary:#fff;
+  --blue-opc: rgba(131, 216, 241, 0.659);
+  --blue: #81d6f1;
+  --gray: #cccccc;
+  --win:#008000;
+  --loose:#ff0000;
+  --draw:#808080;
+ 
 }
 * {
     padding: 0;
@@ -20,6 +28,6 @@
     padding: 20px;
     font-weight: bold;
     border-radius: 5px;
-    background-color: #ff0000;
-    color: #fff;
+    background-color: var(--loose);
+    color: var(--secondary);
   }
